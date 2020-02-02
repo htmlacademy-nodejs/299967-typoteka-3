@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 * Студент: [Сергей Исаев](https://up.htmlacademy.ru/nodejs/3/user/299967).
-* Наставник: `Неизвестно`.
+* Наставник: `Олег Поляков`.
 
 ---
 
