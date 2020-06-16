@@ -2,11 +2,24 @@
 
 const {Router} = require(`express`);
 
-const articlesRouter = new Router();
+const articleRouter = new Router();
 
-articlesRouter.get(`/:id`, (req, res) => res.send(`/articles/${req.params.id}`));
-articlesRouter.get(`/add`, (req, res) => res.send(`/articles/add`));
-articlesRouter.get(`/edit/:id`, (req, res) => res.send(`/articles/edit/${req.params.id}`));
-articlesRouter.get(`/category/:id`, (req, res) => res.send(`/articles/category/${req.params.id}`));
+articleRouter.get(`/add`, (req, res) => {
+  res.render(`new-post`);
+});
 
-module.exports = articlesRouter;
+articleRouter.get(`/:id`, (req, res) => {
+  res.render(`post`);
+});
+
+articleRouter.get(`/category/:id`, (req, res) => {
+  res.render(`articles-by-category`);
+});
+
+articleRouter.get(`/edit/:id`, (req, res) => {
+  res.send(`/articles/edit/${req.params.id}`);
+});
+
+module.exports = {
+  articleRouter,
+};

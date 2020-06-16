@@ -1,18 +1,21 @@
 'use strict';
 
 const {Cli} = require(`./cli`);
-const {
-  DEFAULT_COMMAND,
-  USER_ARGV_INDEX,
-  ExitCode,
-} = require(`../constants`);
+const {ExitCode} = require(`../const`);
 
-const userArguments = process.argv.slice(USER_ARGV_INDEX);
-const [userCommand, ...commandValue] = userArguments;
+const DEFAULT_COMMAND = `--help`;
+const USER_COMMAND_INDEX = 2;
 
-if (!userArguments.length || !Cli[userCommand]) {
-  Cli[DEFAULT_COMMAND].run();
-  process.exit(ExitCode.SUCCESS);
-}
+const userInputs = process.argv.slice(USER_COMMAND_INDEX);
+const [userCommand, ...commandArgs] = userInputs;
 
-Cli[userCommand].run(commandValue);
+const executeCommand = async (commandName, arg) => {
+  const command = Cli[commandName] || Cli[DEFAULT_COMMAND];
+  const exitCode = await command.run(arg);
+
+  if (exitCode !== ExitCode.WORKING) {
+    process.exit(exitCode);
+  }
+};
+
+executeCommand(userCommand, commandArgs);
