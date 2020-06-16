@@ -1,19 +1,19 @@
 'use strict';
 
 const chalk = require(`chalk`);
-const {ExitCode} = require(`../../const`);
-
-const HELP_MESSAGE = `Гайд:
-    server <command>
-    Команды:
-    --version             выводит номер версии
-    --help                печатает этот текст
-    --generate <count>    формирует файл mocks.json`;
 
 module.exports = {
   name: `--help`,
   run() {
-    console.info(chalk.grey(HELP_MESSAGE));
-    return ExitCode.SUCCESS;
+    console.log(chalk.gray(`
+Программа запускает http-сервер и формирует файл с данными для API.
+
+  Гайд:
+  server <command>
+
+  Команды:
+  --version:            выводит номер версии
+  --help:               печатает этот текст
+  --generate <count>    формирует файл mocks.json`));
   }
 };
