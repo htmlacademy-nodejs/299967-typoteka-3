@@ -1,86 +1,56 @@
 'use strict';
 
-const fs = require(`fs`).promises;
+const {generatePost, readContent} = require(`../../utils`);
+const fs = require(`fs`);
 const chalk = require(`chalk`);
-const {ExitCode} = require(`../../constants`);
-const {getRandomInt, shuffle} = require(`../../util`);
+const {ExitCode, MOCK_FILE} = require(`../../const`);
 
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_OUTPUT_PATH = `mocks.json`;
+const DEFAULT_POSTS_COUNT = 1;
+const MAX_POSTS_COUNT = 1000;
+const Message = {
+  WRONG_POSTS_COUNT: `Не больше ${MAX_POSTS_COUNT} публикаций`,
+  FILE_ERROR: `Can't write data to file...`,
+  FILE_SUCCESS: `Operation success. File created.`,
+};
 
-const DEFAULT_COUNT = 1;
-const MAX_COUNT = 1000;
-const MAX_ANNOUNCES = 5;
-const MONTH_RANGE = 3;
+const generatePosts = (count, data) => new Array(count).fill(``).map(() => generatePost(data));
 
-const readContent = async (filePath) => {
+const createMockFile = async (count) => {
+  const data = {
+    titles: await readContent(`./data/${DataFileName.TITLE}`),
+    sentences: await readContent(`./data/${DataFileName.DESCRIPTION}`),
+    categories: await readContent(`./data/${DataFileName.CATEGORY}`),
+  };
+
+  const posts = JSON.stringify(generatePosts(count, data));
+
   try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.trimEnd().split(`\n`);
+    await fs.promises.writeFile(MOCK_FILE, posts);
+    console.info(chalk.green(Message.FILE_SUCCESS));
+    return ExitCode.SUCCESS;
   } catch (err) {
-    console.error(chalk.red(err));
-    return [];
+    console.error(chalk.red(`${Message.FILE_ERROR}: ${err}`));
+    return ExitCode.ERROR;
   }
 };
 
-const generateCreatedDate = () => {
-  const prevDate = new Date();
-  prevDate.setMonth(prevDate.getMonth() - MONTH_RANGE);
-  const randomTimestamp = getRandomInt(prevDate, Date.now());
-  const randomDate = new Date(randomTimestamp).toISOString();
-  const [date, time] = `${randomDate}`.split(`T`);
-  return `${date} ${time.split(`.`)[0]}`;
+const DataFileName = {
+  TITLE: `titles.txt`,
+  DESCRIPTION: `sentences.txt`,
+  CATEGORY: `categories.txt`,
 };
-
-const generatePublications = ({count, titles, sentences, categories}) => (
-  Array(count).fill({}).map(() => ({
-    title: titles[getRandomInt(0, titles.length - 1)],
-    createdData: generateCreatedDate(),
-    announce: shuffle(sentences).slice(0, MAX_ANNOUNCES).join(` `),
-    fullText: shuffle(sentences).slice(0, getRandomInt(1, sentences.length - 1)).join(` `),
-    category: shuffle(categories).slice(0, getRandomInt(1, categories.length - 1)),
-  }))
-);
 
 module.exports = {
   name: `--generate`,
-  async run(args) {
-    const promises = [
-      FILE_TITLES_PATH,
-      FILE_SENTENCES_PATH,
-      FILE_CATEGORIES_PATH,
-    ].map(readContent);
+  async run(arg) {
+    const [userParam] = arg;
+    const postsCount = parseInt(userParam, 10) || DEFAULT_POSTS_COUNT;
 
-    const [
-      titles,
-      sentences,
-      categories,
-    ] = await Promise.all(promises);
-
-    const [countArg] = args;
-    const count = Number.parseInt(countArg, 10) || DEFAULT_COUNT;
-
-    if (count > MAX_COUNT) {
-      console.error(chalk.red(`Не больше 1000 публикаций`));
-      process.exit(ExitCode.ERROR);
+    if (postsCount > MAX_POSTS_COUNT) {
+      console.error(chalk.red(Message.WRONG_POSTS_COUNT));
+      return ExitCode.ERROR;
     }
 
-    const publications = generatePublications({
-      count,
-      titles,
-      sentences,
-      categories,
-    });
-
-    const content = JSON.stringify(publications);
-
-    try {
-      await fs.writeFile(FILE_OUTPUT_PATH, content);
-      console.info(chalk.green(`Operation success. File created.`));
-    } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
-    }
+    return await createMockFile(postsCount);
   }
 };

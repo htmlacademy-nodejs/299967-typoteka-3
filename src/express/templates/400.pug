@@ -1,0 +1,18 @@
+extends layout.pug
+
+block prepend head
+  meta(name="Description" content="Личный блог Типотека")
+
+block prepend body
+  -var wrapperClasses=["wrapper-color"]
+
+block prepend header
+  -var logoClasses="header__logo--404"
+  -var headerClasses="header--error"
+
+block content
+  main
+    h1.visually-hidden &Ocy;&shcy;&icy;&bcy;&kcy;&acy; 404
+    section.error
+      h2.error__title.title.title--big &Pcy;&ocy;&khcy;&ocy;&zhcy;&iecy; &ocy;&shcy;&icy;&bcy;&lcy;&icy;&scy;&softcy; &acy;&dcy;&rcy;&iecy;&scy;&ocy;&mcy;
+      a.error__link.text.text--big(href='main.html') &Vcy;&iecy;&rcy;&ncy;&ucy;&tcy;&softcy;&scy;&yacy; &ncy;&acy; &gcy;&lcy;&acy;&vcy;&ncy;&ucy;&yucy;
