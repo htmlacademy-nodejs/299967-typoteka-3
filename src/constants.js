@@ -1,6 +1,5 @@
 'use strict';
 
-module.exports.DEFAULT_PORT = 8080;
 module.exports.DEFAULT_COMMAND = `--help`;
 
 module.exports.USER_ARGV_INDEX = 2;
